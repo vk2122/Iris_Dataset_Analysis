@@ -1,18 +1,20 @@
 from flask import Flask, render_template, request
 import pickle
+import warnings
+warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
-# load the model
-model = pickle.load(open('savedmodel.sav', 'rb'))
+
+model = pickle.load(open('irismodel.pkl', 'rb'))
 
 
 @app.route('/')
 def home():
     result = ''
-    return render_template('index.html', **locals())
+    return render_template('index.html', methods=['GET'])
 
 
-@app.route('/predict', methods=['POST', 'GET'])
+@app.route('/predict', methods=["POST", "GET"])
 def predict():
     sepal_length = float(request.form['sepal_length'])
     sepal_width = float(request.form['sepal_width'])
@@ -20,8 +22,7 @@ def predict():
     petal_width = float(request.form['petal_width'])
     result = model.predict(
         [[sepal_length, sepal_width, petal_length, petal_width]])[0]
-    return render_template('index.html', **locals())
+    return render_template('index.html')
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+app.run(debug=True)
